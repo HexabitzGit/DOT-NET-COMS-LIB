@@ -35,10 +35,10 @@ And for each Message there is a CRC in the last byte to check the integrity of t
 * `public byte[] GetAll()`: Method to get the full message bytes.
  	
 
-* private List<byte> Organize(List<byte> MesssageList): Private method to organize the message bytes in the correct order as described [here](https://hexabitz.com/docs/code-overview/array-messaging/ "https://hexabitz.com/docs/code-overview/array-messaging/") in **Calculating and Comparing CRC Codes** section.
+* `private List<byte> Organize(List<byte> MesssageList)`: Private method to organize the message bytes in the correct order as described [here](https://hexabitz.com/docs/code-overview/array-messaging/ "https://hexabitz.com/docs/code-overview/array-messaging/") in **Calculating and Comparing CRC Codes** section.
  	
 
-* private byte CRC32B(byte[] Buffer): Algorithm used in the Hexabitz modules hardware to calculate the correct CRC32 but we are only using the first byte in our modules.
+* `private byte CRC32B(byte[] Buffer)`: Algorithm used in the Hexabitz modules hardware to calculate the correct CRC32 but we are only using the first byte in our modules.
 
 
 
