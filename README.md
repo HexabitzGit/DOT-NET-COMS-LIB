@@ -51,10 +51,14 @@ The class contains the following methods:
 * `Start()` and `End()`: to open and close the Serial port.
 * `public void SendMessage(byte Destination, byte Source, byte Options, int Code, byte[] Payload)`: 
 The parameters are:
+
 Source and Destination are IDs of source and destination modules.
+
 Options: is a byte that contains some option bits and flags.
+
 Message: The data we want to send to Hexabitz modules in the correct order according to the functionality.
-* `private void Receive()`: The reviceing method to listen to the port if we got any response from it.
+
+* `private void Receive()`: The receiving method to listen to the port if we got any response from it.
 * `private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)`: Method the .Net platform provides to respond to the received data from the SerialPort.
 * `private string to_right_hex(string hex)`: To correct the values received from the port.
 
@@ -67,7 +71,7 @@ And also contains the message codes enum to specify the codes to be used in the 
 The **Message** Class is the base class to create and the right message with its CRC but the **HexInterface** class can be modified according to the platform you are willing
 to use with Hexabitz modules, here is an example of using and implementing the library using C# language.
 
-First to create instance of the HexInterface and give it a string represent the COM number using your way.
+First, create instance of the HexInterface and give it a string representing the COM port number your are using.
 
 `HexaInterface HexInter = new HexaInterface("5");`  
 
@@ -109,9 +113,8 @@ and we've got also `Channel`, `PortModule` and `Module` as bytes to be included 
 
 Now we can call the `SendMessage` with the correct `Payload`
 
-## Reciveing ##
-The logical reciveing way is to handle the response messages from the Hexabitz modules in the platform due to faster values handling and using, in the following we'll
-describe how to recive a 4 byte float value using the HexInterface `Recieve` method.
+## Recieving ##
+Receiving bytes from a serial port is platform-dependant. We'll show in the following examples how to recive and parse a 4 byte float value using the HexInterface `Recieve` method.
 
 Here we have the `Recieve` Method:
 
@@ -125,7 +128,7 @@ Here we have the `Recieve` Method:
 </code>
 </pre>
 
-were `Port` is defined as:  
+where `Port` is defined as:  
 `SerialPort = new SerialPort("COM" + COM, 921600, Parity.None, 8, StopBits.One); // The default values to be used in the connection.`
 
 and `Port_DataReceived` is defind as: 
