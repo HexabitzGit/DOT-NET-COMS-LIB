@@ -49,6 +49,7 @@ Which will represent the Interface between the Message Class and the platform we
 The class contains the following methods:
 * `public HexaInterface(string COM)`: To initialize an instance providing COM number only.
 * `Start()` and `End()`: to open and close the Serial port.
+* `public byte Options()`: To create the options byte.
 * `public void SendMessage(byte Destination, byte Source, byte Options, int Code, byte[] Payload)`: 
 The parameters are:
 Source and Destination are IDs of source and destination modules.
@@ -57,6 +58,7 @@ Message: The data we want to send to Hexabitz modules in the correct order accor
 * `private void Receive()`: The reviceing method to listen to the port if we got any response from it.
 * `private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)`: Method the .Net platform provides to respond to the received data from the SerialPort.
 * `private string to_right_hex(string hex)`: To correct the values received from the port.
+* Region for the options byte enums in [Options](https://hexabitz.com/docs/code-overview/array-messaging/ "https://hexabitz.com/docs/code-overview/array-messaging/") section.
 
 And also contains the message codes enum to specify the codes to be used in the communication.
 
@@ -78,6 +80,32 @@ or if we want to get it for example from a ComboBox value using windows forms:
 to send a message with the payload (see documentation for correct bytes order)  
 
 `HexInter.SendMessage(Destination, Source, Options, Code, Payload);`  
+
+but before sending the message we must construct the `Options` byte using `HexaInterface.Options()`
+<pre>
+<code> public byte Options (Options1_Extended_Flag options1_Extended_Flag,
+                                Options2_16_BIT_Code options2_16_BIT_Code,
+                                Options34_Trace_Options options34_Trace_Options,
+                                Options5_Reserved options5_Reserved,
+                                Options67_Response_Options options67_Response_Options,
+                                Options8_Next_Message options8_Next_Message) 
+        {
+            string optionsString = "" + options1_Extended_Flag +
+                                        options2_16_BIT_Code +
+                                        options34_Trace_Options +
+                                        options5_Reserved +
+                                        options67_Response_Options +
+                                        options8_Next_Message;
+
+            char[] charArray = optionsString.ToCharArray();
+            Array.Reverse(charArray);
+            optionsString = new string(charArray);
+            return byte.Parse(optionsString);
+        }
+</code>
+</pre>
+
+where the options are enum in 
 As described about the parameters above, we have the `Payload` array must be constructed in the right order to get the modules do the right job.  
 The following example is about communicating with the H26R0x module to send and recive data from it:  
 We have two variables `Period` and `Time` and with the data type : `uint`  
@@ -87,7 +115,7 @@ We are going to get the 4 byte array for them (C#):
 `byte[] PeriodBytes = BitConverter.GetBytes(period);`  
 `byte[] TimeBytes = BitConverter.GetBytes(time);`  
 
-and we've got also `Channel`, `PortModule` and `Module` as bytes to be included in the `Payload` array, so the final will be:  
+and we've got also (for this example) `Channel`, `PortModule` and `Module` as bytes to be included in the `Payload` array, so the final will be:  
 
 <pre>
 <code>byte[] Payload = {
@@ -107,7 +135,7 @@ and we've got also `Channel`, `PortModule` and `Module` as bytes to be included 
 </code>
 </pre>
 
-Now we can call the `SendMessage` with the correct `Payload`
+Now we can call the `SendMessage` with the correct `Options` and `Payload`
 
 ## Reciveing ##
 The logical reciveing way is to handle the response messages from the Hexabitz modules in the platform due to faster values handling and using, in the following we'll
