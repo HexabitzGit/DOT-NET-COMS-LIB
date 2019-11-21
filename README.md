@@ -89,7 +89,8 @@ We are going to get the 4 byte array for them (C#):
 
 and we've got also `Channel`, `PortModule` and `Module` as bytes to be included in the `Payload` array, so the final will be:  
 
-<pre><code> byte[] Payload = {
+<pre>
+<code>byte[] Payload = {
                 channel,
                 periodBytes[3],
                 periodBytes[2],
@@ -103,12 +104,71 @@ and we've got also `Channel`, `PortModule` and `Module` as bytes to be included 
 
                 modulePort,
                 module};
-</code></pre>
+</code>
+</pre>
 
 Now we can call the `SendMessage` with the correct `Payload`
 
 ## Reciveing ##
-The logical way to recive is to handle the response messages from the Hexabitz modules in the platform due to faster values handling and using, in the following we'll
-describe how to recive a 4 byte values and using the HexInterface `Recieve` method.
+The logical reciveing way is to handle the response messages from the Hexabitz modules in the platform due to faster values handling and using, in the following we'll
+describe how to recive a 4 byte float value using the HexInterface `Recieve` method.
+
+Here we have the `Recieve` Method:
+
+<pre>
+<code>// The receiving method to listen to the port if we got any respond from it.
+    private void Receive()
+    {
+        Port.DataReceived += new SerialDataReceivedEventHandler(Port_DataReceived);
+        try { Port.Open(); } catch { }
+    }
+</code>
+</pre>
+
+were `Port` is defined as:  
+`SerialPort = new SerialPort("COM" + COM, 921600, Parity.None, 8, StopBits.One); // The default values to be used in the connection.`
+
+and `Port_DataReceived` is defind as: 
+<pre>
+<code>// Method the .Net platform provids to responed to recieved data from SerialPort.
+    private void Port_DataReceived(object sender, SerialDataReceivedEventArgs e)
+    {
+        int bytes_count = 0;
+        byte[] buffer = new byte[4];
+        bytes_count = Port.Read(buffer, 0, 4);
+
+        string D0 = to_right_hex(buffer[3].ToString("X"));
+        string D1 = to_right_hex(buffer[2].ToString("X"));
+        string D2 = to_right_hex(buffer[1].ToString("X"));
+        string D3 = to_right_hex(buffer[0].ToString("X"));
+        string value = D3 + D2 + D1 + D0;
+
+        int IntRep = int.Parse(value, NumberStyles.AllowHexSpecifier); // here is the representation of the value in Integer value
+        float FloatRep = BitConverter.ToSingle(BitConverter.GetBytes(IntRep), 0); // convert the int value to float
+        
+    }
+</code>
+</pre>
+
+where `to_right_hex` is defind as:  
+<pre>
+<code>// To correct the values recieved from the port.
+        private string to_right_hex(string hex)
+        {
+            switch (hex)
+            {
+                case "A": hex = "0" + hex; break;
+                case "B": hex = "0" + hex; break;
+                case "C": hex = "0" + hex; break;
+                case "D": hex = "0" + hex; break;
+                case "E": hex = "0" + hex; break;
+                case "F": hex = "0" + hex; break;
+            }
+            return hex;
+        }
+</code>
+</pre>
+
+
 
 
