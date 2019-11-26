@@ -85,31 +85,17 @@ to send a message with the payload (see documentation for correct bytes order)
 
 `HexInter.SendMessage(Destination, Source, Options, Code, Payload);`  
 
-but before sending the message we must construct the `Options` byte using `HexaInterface.Options()`
+but before sending the message we must chek the `Options` global variables 
 <pre>
-<code> public byte Options (Options1_Extended_Flag options1_Extended_Flag,
-                                Options2_16_BIT_Code options2_16_BIT_Code,
-                                Options34_Trace_Options options34_Trace_Options,
-                                Options5_Reserved options5_Reserved,
-                                Options67_Response_Options options67_Response_Options,
-                                Options8_Next_Message options8_Next_Message) 
-        {
-            string optionsString = "" + options1_Extended_Flag +
-                                        options2_16_BIT_Code +
-                                        options34_Trace_Options +
-                                        options5_Reserved +
-                                        options67_Response_Options +
-                                        options8_Next_Message;
-
-            char[] charArray = optionsString.ToCharArray();
-            Array.Reverse(charArray);
-            optionsString = new string(charArray);
-            return byte.Parse(optionsString);
-        }
+<code>public string Opt8_Next_Message = "0";
+public string Opt67_Response_Options = "01";
+public string Opt5_Reserved = "0";
+public string Opt34_Trace_Options = "00";
+public string Opt2_16_BIT_Code = "1";
+public string Opt1_Extended_Flag = "0";
 </code>
 </pre>
 
-where the options are enum in 
 As described about the parameters above, we have the `Payload` array must be constructed in the right order to get the modules do the right job.  
 The following example is about communicating with the H26R0x module to send and recive data from it:  
 We have two variables `Period` and `Time` and with the data type : `uint`  
