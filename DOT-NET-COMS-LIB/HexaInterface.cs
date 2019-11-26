@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO.Ports;
+using System.Linq;
 
 namespace DOT_NET_COMS_LIB
 {
@@ -9,7 +10,12 @@ namespace DOT_NET_COMS_LIB
         SerialPort Port;
         string COM;
 
-        public string Extended_Flag = "0";
+        public string Opt8_Next_Message = "0";
+        public string Opt67_Response_Options = "01";
+        public string Opt5_Reserved = "0";
+        public string Opt34_Trace_Options = "00";
+        public string Opt2_16_BIT_Code = "1";
+        public string Opt1_Extended_Flag = "0";
         public byte[] AllMessage;
         public HexaInterface(string COM)
         {
@@ -28,29 +34,39 @@ namespace DOT_NET_COMS_LIB
             Port.Dispose();
         }
 
-        public byte Options (Options1_Extended_Flag options1_Extended_Flag,
-                                Options2_16_BIT_Code options2_16_BIT_Code,
-                                Options34_Trace_Options options34_Trace_Options,
-                                Options5_Reserved options5_Reserved,
-                                Options67_Response_Options options67_Response_Options,
-                                Options8_Next_Message options8_Next_Message)  // 00100010 // 0x22
-        {
-            string optionsString = "" + options1_Extended_Flag +
-                                        options2_16_BIT_Code +
-                                        options34_Trace_Options +
-                                        options5_Reserved +
-                                        options67_Response_Options +
-                                        options8_Next_Message;
+        //public byte Options (Options1_Extended_Flag options1_Extended_Flag,
+        //                        Options2_16_BIT_Code options2_16_BIT_Code,
+        //                        Options34_Trace_Options options34_Trace_Options,
+        //                        Options5_Reserved options5_Reserved,
+        //                        Options67_Response_Options options67_Response_Options,
+        //                        Options8_Next_Message options8_Next_Message)  // 00100010 // 0x22
+        //{
+        //    string optionsString = "" + options1_Extended_Flag +
+        //                                options2_16_BIT_Code +
+        //                                options34_Trace_Options +
+        //                                options5_Reserved +
+        //                                options67_Response_Options +
+        //                                options8_Next_Message;
 
-            char[] charArray = optionsString.ToCharArray();
-            Array.Reverse(charArray);
-            optionsString = new string(charArray);
-            return byte.Parse(optionsString);
-        }
+        //    char[] charArray = optionsString.ToCharArray();
+        //    Array.Reverse(charArray);
+        //    optionsString = new string(charArray);
+        //    return byte.Parse(optionsString);
+        //}
 
         // Method to send the buffer to Hexabitz modules.
-        public void SendMessage(byte Destination, byte Source, byte Options, int Code, byte[] Payload) 
+
+
+        public void SendMessage(byte Destination, byte Source, int Code, byte[] Payload) 
         {
+
+            string optionsString = Opt8_Next_Message +
+                                   Opt67_Response_Options +
+                                   Opt5_Reserved +
+                                   Opt34_Trace_Options +
+                                   Opt2_16_BIT_Code +
+                                   Opt1_Extended_Flag;
+            byte Options = GetBytes(optionsString)[0];  // 00100010 // 0x22
 
             Start();
             Message _Message = new Message(Destination, Source, Options, Code, Payload);
@@ -104,6 +120,16 @@ namespace DOT_NET_COMS_LIB
             return hex;
         }
 
+        //get byte from string
+        public static byte[] GetBytes(string bitString)
+        {
+            return Enumerable.Range(0, bitString.Length / 8).
+                Select(pos => Convert.ToByte(
+                    bitString.Substring(pos * 8, 8),
+                    2)
+                ).ToArray();
+        }
+
         // Enum for the codes to be sent to the modules
         public enum Message_Codes
         {
@@ -119,51 +145,51 @@ namespace DOT_NET_COMS_LIB
 
         #region Options
 
-        // 8th bit (MSB): Long messages flag. If set, then message parameters continue in the next message.
-        public enum Options8_Next_Message
-        {
-            FALSE = 0,
-            TRUE = 1,
-        }
+        //// 8th bit (MSB): Long messages flag. If set, then message parameters continue in the next message.
+        //public enum Options8_Next_Message
+        //{
+        //    FALSE = 0,
+        //    TRUE = 1,
+        //}
 
-        // 6-7th bits:
-        public enum Options67_Response_Options
-        {
-            SEND_BACK_NO_RESPONSE = 00,
-            SEND_RESPONSES_ONLY_MESSAGES = 01,
-            SEND_RESPONSES_ONLY_TO_CLI_COMMANDS = 10,
-            SEND_RESPONSES_TO_EVERYTHING = 11,
-        }
+        //// 6-7th bits:
+        //public enum Options67_Response_Options
+        //{
+        //    SEND_BACK_NO_RESPONSE = 00,
+        //    SEND_RESPONSES_ONLY_MESSAGES = 01,
+        //    SEND_RESPONSES_ONLY_TO_CLI_COMMANDS = 10,
+        //    SEND_RESPONSES_TO_EVERYTHING = 11,
+        //}
 
-        // 5th bit: reserved.
-        public enum Options5_Reserved
-        {
-            FALSE = 0,
-            TRUE = 1,
-        }
+        //// 5th bit: reserved.
+        //public enum Options5_Reserved
+        //{
+        //    FALSE = 0,
+        //    TRUE = 1,
+        //}
 
-        // 3rd-4th bits:
-        public enum Options34_Trace_Options
-        {
-            SHOW_NO_TRACE = 00,
-            SHOW_MESSAGE_TRACE = 01,
-            SHOW_MESSAGE_RESPONSE_TRACE = 10,
-            SHOW_TRACE_FOR_BOTH_MESSAGES_AND_THEIR_RESPONSES = 11,
-        }
+        //// 3rd-4th bits:
+        //public enum Options34_Trace_Options
+        //{
+        //    SHOW_NO_TRACE = 00,
+        //    SHOW_MESSAGE_TRACE = 01,
+        //    SHOW_MESSAGE_RESPONSE_TRACE = 10,
+        //    SHOW_TRACE_FOR_BOTH_MESSAGES_AND_THEIR_RESPONSES = 11,
+        //}
 
-        // 2nd bit: Extended Message Code flag. If set, then message codes are 16 bits.
-        public enum Options2_16_BIT_Code
-        {
-            FALSE = 0,
-            TRUE = 1,
-        }
+        //// 2nd bit: Extended Message Code flag. If set, then message codes are 16 bits.
+        //public enum Options2_16_BIT_Code
+        //{
+        //    FALSE = 0,
+        //    TRUE = 1,
+        //}
 
-        // 1st bit (LSB): Extended Options flag. If set, then the next byte is an Options byte as well.
-        public enum Options1_Extended_Flag
-        {
-            FALSE = 0,
-            TRUE = 1,
-        }
+        //// 1st bit (LSB): Extended Options flag. If set, then the next byte is an Options byte as well.
+        //public enum Options1_Extended_Flag
+        //{
+        //    FALSE = 0,
+        //    TRUE = 1,
+        //}
 
         #endregion
     }
