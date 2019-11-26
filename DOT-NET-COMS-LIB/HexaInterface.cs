@@ -8,6 +8,8 @@ namespace DOT_NET_COMS_LIB
     {
         SerialPort Port;
         string COM;
+
+        public string Extended_Flag = "0";
         public byte[] AllMessage;
         public HexaInterface(string COM)
         {
@@ -31,7 +33,7 @@ namespace DOT_NET_COMS_LIB
                                 Options34_Trace_Options options34_Trace_Options,
                                 Options5_Reserved options5_Reserved,
                                 Options67_Response_Options options67_Response_Options,
-                                Options8_Next_Message options8_Next_Message)  // 00100010
+                                Options8_Next_Message options8_Next_Message)  // 00100010 // 0x22
         {
             string optionsString = "" + options1_Extended_Flag +
                                         options2_16_BIT_Code +
@@ -49,8 +51,6 @@ namespace DOT_NET_COMS_LIB
         // Method to send the buffer to Hexabitz modules.
         public void SendMessage(byte Destination, byte Source, byte Options, int Code, byte[] Payload) 
         {
-
-            
 
             Start();
             Message _Message = new Message(Destination, Source, Options, Code, Payload);
