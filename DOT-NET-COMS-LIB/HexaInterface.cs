@@ -9,6 +9,7 @@ namespace DOT_NET_COMS_LIB
     {
         SerialPort Port;
         string COM;
+        int BaudRate;
 
         public string Opt8_Next_Message = "0";
         public string Opt67_Response_Options = "01";
@@ -18,9 +19,10 @@ namespace DOT_NET_COMS_LIB
         public string Opt1_Extended_Flag = "0";
         public byte[] AllMessage;
 
-        public HexaInterface(string COM)
+        public HexaInterface(string COM, int BaudRate)
         {
             this.COM = COM;
+            this.BaudRate = BaudRate;
         }
 
         // Method to send the buffer to Hexabitz modules.
@@ -43,7 +45,7 @@ namespace DOT_NET_COMS_LIB
 
         public void Start()
         {
-            Port = new SerialPort("COM" + COM, 921600, Parity.None, 8, StopBits.One); // The default values to be used in the connection.
+            Port = new SerialPort("COM" + COM, BaudRate, Parity.None, 8, StopBits.One); // The default values to be used in the connection.
             try { Port.Open(); } catch (Exception exp) { }
         }
 
