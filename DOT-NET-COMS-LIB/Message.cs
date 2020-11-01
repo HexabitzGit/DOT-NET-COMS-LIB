@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DOT_NET_COMS_LIB
 {
@@ -7,7 +8,7 @@ namespace DOT_NET_COMS_LIB
         #region Variables
         public byte H = 0x48,
              Z = 0x5A,
-             Length = 0,
+             // length byte (bytes)
              Destination,
              Source,
              Options,
@@ -16,7 +17,8 @@ namespace DOT_NET_COMS_LIB
              // Message byte array 
              // ...
              CRC;
-        List<byte> AllMesssageList;
+        int Length = 0;
+        public List<byte> AllMessageList;
         byte[] Payload, AllMessage, OrganizedBuffer;
         #endregion
 
@@ -33,37 +35,73 @@ namespace DOT_NET_COMS_LIB
             MSC = (byte)(Code >> 8);
             this.Payload = Payload;
 
-            AllMesssageList = new List<byte>();
-            AllMesssageList.Add(H);
-            AllMesssageList.Add(Z);
-            AllMesssageList.Add(Length);
-            AllMesssageList.Add(Destination);
-            AllMesssageList.Add(Source);
-            AllMesssageList.Add(Options);
-            AllMesssageList.Add(LSC);
+            AllMessageList = new List<byte>();
+            AllMessageList.Add(H);
+            AllMessageList.Add(Z);
+            // Length byte postion
+            AllMessageList.Add(Destination);
+            AllMessageList.Add(Source);
+            AllMessageList.Add(Options);
+            AllMessageList.Add(LSC);
             if(MSC != 0) // If the code is only one byte so the MSC
-                AllMesssageList.Add(MSC);
+                AllMessageList.Add(MSC);
 
             foreach (byte item in Payload)
             {
-                AllMesssageList.Add(item);
+                AllMessageList.Add(item);
             }
 
-            Length = (byte)(AllMesssageList.Count - 3); // Not including H & Z delimiters, the length byte itself and the CRC byte
+            Length = (AllMessageList.Count); 
+
+            if (Length > 255)
+            {
+                Length -= 4;
+                byte LSL = (byte)(Length & 0xFF); // Get the MSL (Most significance length byte) & LSL (Least significance length byte) automaticly from the length.
+                byte MSL = (byte)(Length >> 8);
+                AllMessageList.Insert(2, LSL);
+                AllMessageList.Insert(3, MSL);
+            }
+            else
+            {
+                byte hexaLength = (byte)(Length - 3); // Not including H & Z delimiters, the length byte itself and the CRC byte
                                                       // so its 4 but we didn't add the CRC yet so its 3.
-            AllMesssageList[2] = Length; // Replace it with the correct length value.
+                AllMessageList.Insert(2, hexaLength); // Added the byte length in the correct position for the message.
+            }
+
             CRC = GetCRC();
-            AllMesssageList.Add(CRC);
-            AllMessage = AllMesssageList.ToArray();
+            AllMessageList.Add(CRC);
+            AllMessage = AllMessageList.ToArray();
+        }
+
+        public Message(byte [] Buffer)
+        {
+            AllMessageList = new List<byte>();
+            AllMessage = Buffer;
         }
 
         // Return the Cyclic Redundancy Check for the buffer.
         public byte GetCRC()
         {
-            List<byte> organizedMesssageList = Organize(AllMesssageList); // Here we are organizing the buffer to calculate the CRC for it.
+            List<byte> organizedMesssageList = Organize(AllMessageList); // Here we are organizing the buffer to calculate the CRC for it.
             OrganizedBuffer = organizedMesssageList.ToArray();
             CRC = CRC32B(OrganizedBuffer);
             return CRC;
+        }
+
+        // Check if a givin message have a correct CRC.
+        public bool IsValid()
+        {
+            byte Buffer_CRC = AllMessage[AllMessage.Length - 1];
+
+            foreach (byte value in AllMessage)
+            {
+                AllMessageList.Add(value);
+            }
+            AllMessageList.RemoveAt(AllMessageList.Count - 1);
+            List<byte> organizedMesssageList = Organize(AllMessageList); 
+            OrganizedBuffer = organizedMesssageList.ToArray();
+            CRC = CRC32B(OrganizedBuffer);
+            return (CRC == Buffer_CRC);
         }
 
         // Get the whole buffer.

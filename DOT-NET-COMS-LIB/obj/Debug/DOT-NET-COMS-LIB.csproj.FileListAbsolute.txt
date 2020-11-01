@@ -4,3 +4,9 @@ D:\Work\Clients\Hexabitz\Codes\DOT-NET-COMS-LIB\DOT-NET-COMS-LIB\obj\Debug\DOT-N
 D:\Work\Clients\Hexabitz\Codes\DOT-NET-COMS-LIB\DOT-NET-COMS-LIB\obj\Debug\DOT-NET-COMS-LIB.dll
 D:\Work\Clients\Hexabitz\Codes\DOT-NET-COMS-LIB\DOT-NET-COMS-LIB\obj\Debug\DOT-NET-COMS-LIB.pdb
 D:\Work\Clients\Hexabitz\Codes\DOT-NET-COMS-LIB\DOT-NET-COMS-LIB\obj\Debug\DOT-NET-COMS-LIB.csprojAssemblyReference.cache
+D:\Work\Clients\Companies\Hexabitz\Codes\Libraries\DOT-NET-COMS-LIB\DOT-NET-COMS-LIB\bin\Debug\DOT-NET-COMS-LIB.dll
+D:\Work\Clients\Companies\Hexabitz\Codes\Libraries\DOT-NET-COMS-LIB\DOT-NET-COMS-LIB\bin\Debug\DOT-NET-COMS-LIB.pdb
+D:\Work\Clients\Companies\Hexabitz\Codes\Libraries\DOT-NET-COMS-LIB\DOT-NET-COMS-LIB\obj\Debug\DOT-NET-COMS-LIB.csprojAssemblyReference.cache
+D:\Work\Clients\Companies\Hexabitz\Codes\Libraries\DOT-NET-COMS-LIB\DOT-NET-COMS-LIB\obj\Debug\DOT-NET-COMS-LIB.csproj.CoreCompileInputs.cache
+D:\Work\Clients\Companies\Hexabitz\Codes\Libraries\DOT-NET-COMS-LIB\DOT-NET-COMS-LIB\obj\Debug\DOT-NET-COMS-LIB.dll
+D:\Work\Clients\Companies\Hexabitz\Codes\Libraries\DOT-NET-COMS-LIB\DOT-NET-COMS-LIB\obj\Debug\DOT-NET-COMS-LIB.pdb
