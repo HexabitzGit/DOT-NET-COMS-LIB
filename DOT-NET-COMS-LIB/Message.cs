@@ -19,7 +19,7 @@ namespace DOT_NET_COMS_LIB
              CRC;
         int Length = 0;
         public List<byte> AllMessageList;
-        byte[] Payload, AllMessage, OrganizedBuffer;
+        public byte[] Payload, AllMessage, OrganizedBuffer;
         #endregion
 
         /// <summary>
@@ -77,6 +77,7 @@ namespace DOT_NET_COMS_LIB
         {
             AllMessageList = new List<byte>();
             AllMessage = Buffer;
+            CRC = GetCRC();
         }
 
         // Return the Cyclic Redundancy Check for the buffer.
@@ -98,9 +99,7 @@ namespace DOT_NET_COMS_LIB
                 AllMessageList.Add(value);
             }
             AllMessageList.RemoveAt(AllMessageList.Count - 1);
-            List<byte> organizedMesssageList = Organize(AllMessageList); 
-            OrganizedBuffer = organizedMesssageList.ToArray();
-            CRC = CRC32B(OrganizedBuffer);
+            CRC = GetCRC();
             return (CRC == Buffer_CRC);
         }
 
@@ -156,8 +155,8 @@ namespace DOT_NET_COMS_LIB
         // Algorithm used in the Hexabitz modules hardware to calculate the correct CRC32 but we are only using the first byte in our modules. 
         private byte CRC32B(byte[] Buffer)  // Change byte to int to get the whole CRC32.
         {
-            byte L = (byte)Buffer.Length;
-            byte I, J;
+            short L = (short)Buffer.Length;
+            short I, J;
             uint CRC, MSB;
             CRC = 0xFFFFFFFF;
             for (I = 0; I < L; I++)
